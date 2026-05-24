@@ -27,7 +27,7 @@ public class VoxyNetworking {
                 LodRequestMessage::encode,
                 LodRequestMessage::decode,
                 LodRequestMessage::handle);
-        CHANNEL.registerMessage(id,
+        CHANNEL.registerMessage(id++,
                 LodProgressMessage.class,
                 LodProgressMessage::encode,
                 LodProgressMessage::decode,

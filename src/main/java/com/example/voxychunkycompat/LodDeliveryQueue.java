@@ -140,7 +140,9 @@ public class LodDeliveryQueue {
 
     /** Sends current progress to the player's client. */
     private static void sendProgress(PlayerTask task) {
-        int remaining = task.queue.size() + task.pendingDiskChecks.size() + task.generationQueue.size();
+        // pendingDiskChecks entries are always re-queued back into task.queue,
+        // so they are already counted by queue.size() — don't add them again.
+        int remaining = task.queue.size() + task.generationQueue.size();
         int done = task.totalPositions - remaining;
         VoxyNetworking.CHANNEL.send(
                 PacketDistributor.PLAYER.with(() -> task.player),

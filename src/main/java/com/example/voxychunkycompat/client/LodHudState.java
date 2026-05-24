@@ -9,6 +9,8 @@ public final class LodHudState {
 
     public static volatile int processed = 0;
     public static volatile int total = 0;
+    /** Persists across sessions; toggled by /voxyhud. */
+    public static volatile boolean hudEnabled = true;
     private static volatile long firstUpdateMs = 0;
     private static volatile long lastUpdateMs = 0;
 
@@ -33,6 +35,7 @@ public final class LodHudState {
 
     /** True while the HUD should be shown. Auto-hides 5 s after last update. */
     public static boolean isActive() {
+        if (!hudEnabled) return false;
         if (total <= 0 || processed >= total) return false;
         return lastUpdateMs > 0 && (System.currentTimeMillis() - lastUpdateMs) < 5_000;
     }

@@ -17,7 +17,7 @@ public class LodHudOverlay implements IGuiOverlay {
     private static final int X = 4;
     private static final int Y = 4;
     private static final int BAR_W = 160;
-    private static final int BAR_H = 6;
+    private static final int BAR_H = 11; // tall enough to show inline % (font.lineHeight = 9)
 
     // Colors (ARGB)
     private static final int BG     = 0x99000000;
