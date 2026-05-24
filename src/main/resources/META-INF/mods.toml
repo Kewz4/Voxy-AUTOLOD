@@ -1,0 +1,66 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+    modId="voxy_server_lod"
+    version="1.1.4"
+    displayName="Voxy Auto LOD"
+    logoFile="voxy_auto_lod_icon.png"
+    description='''
+Automatically generates distant terrain LODs for Voxy without requiring players to visit every chunk.
+
+Backported for Forge 1.20.1 with Embeddium and Oculus compatibility.
+
+Works on singleplayer and dedicated servers. On a server every connected client benefits from
+pregenerated LODs — players see distant terrain the moment they join, even for areas never visited.
+
+=== REQUIREMENTS ===
+1. Forge 47.4.4 for Minecraft 1.20.1
+2. Voxy (Forge 1.20.1 port) [REQUIRED on CLIENT only]
+3. Embeddium [REQUIRED by Voxy on CLIENT, replaces Sodium]
+4. Oculus [OPTIONAL, shader support]
+5. Chunky for Forge [OPTIONAL but recommended for pregenerating chunks]
+'''
+
+[[dependencies.voxy_server_lod]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47.4.4,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.voxy_server_lod]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.voxy_server_lod]]
+    modId="voxy"
+    mandatory=false
+    versionRange="[0.1,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.voxy_server_lod]]
+    modId="embeddium"
+    mandatory=false
+    versionRange="[0.3,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.voxy_server_lod]]
+    modId="oculus"
+    mandatory=false
+    versionRange="[1.0,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.voxy_server_lod]]
+    modId="chunky"
+    mandatory=false
+    versionRange="[1.3,)"
+    ordering="AFTER"
+    side="BOTH"
