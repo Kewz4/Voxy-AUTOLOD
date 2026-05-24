@@ -1,5 +1,7 @@
 package com.example.voxychunkycompat;
 
+import com.example.voxychunkycompat.network.LodProgressMessage;
+import com.example.voxychunkycompat.network.VoxyNetworking;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
@@ -8,6 +10,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LodDeliveryQueue {
 
     private static final Map<UUID, PlayerTask> TASKS = new ConcurrentHashMap<>();
+    private static final int UPDATE_INTERVAL_TICKS = 20; // 1 s
 
     public static void enqueue(ServerLevel level, ServerPlayer player, int centerX, int centerZ, int radius) {
         ArrayList<long[]> positions = new ArrayList<>();
@@ -32,7 +36,10 @@ public class LodDeliveryQueue {
                 }
             }
         }
-        TASKS.put(player.getUUID(), new PlayerTask(level, player, new ArrayDeque<>(positions)));
+        PlayerTask task = new PlayerTask(level, player, new ArrayDeque<>(positions));
+        TASKS.put(player.getUUID(), task);
+        // Send the initial HUD packet so the client knows the total right away.
+        sendProgress(task);
     }
 
     public static void removePlayer(UUID playerId) {
@@ -65,6 +72,8 @@ public class LodDeliveryQueue {
                 TASKS.remove(entry.getKey());
                 VoxyServerLODMod.LOGGER.info("[VoxyAutoLOD] Finished extended LOD delivery for {}",
                         task.player.getName().getString());
+                // Final progress: tell the client we're done.
+                sendProgressDone(task);
                 continue;
             }
 
@@ -119,7 +128,30 @@ public class LodDeliveryQueue {
                 }
                 processed++;
             }
+
+            // Send periodic HUD update.
+            task.ticksSinceUpdate++;
+            if (task.ticksSinceUpdate >= UPDATE_INTERVAL_TICKS) {
+                task.ticksSinceUpdate = 0;
+                sendProgress(task);
+            }
         }
+    }
+
+    /** Sends current progress to the player's client. */
+    private static void sendProgress(PlayerTask task) {
+        int remaining = task.queue.size() + task.pendingDiskChecks.size() + task.generationQueue.size();
+        int done = task.totalPositions - remaining;
+        VoxyNetworking.CHANNEL.send(
+                PacketDistributor.PLAYER.with(() -> task.player),
+                new LodProgressMessage(done, task.totalPositions));
+    }
+
+    /** Sends the "all done" signal (HUD clears itself when processed >= total). */
+    private static void sendProgressDone(PlayerTask task) {
+        VoxyNetworking.CHANNEL.send(
+                PacketDistributor.PLAYER.with(() -> task.player),
+                new LodProgressMessage(task.totalPositions, task.totalPositions));
     }
 
     private static void deliver(PlayerTask task, boolean dedicated, LevelChunk chunk) {
@@ -134,13 +166,16 @@ public class LodDeliveryQueue {
         final ServerLevel level;
         final ServerPlayer player;
         final Deque<long[]> queue;
+        final int totalPositions;
         final Map<Long, CompletableFuture<Boolean>> pendingDiskChecks = new ConcurrentHashMap<>();
         final Deque<long[]> generationQueue = new ArrayDeque<>();
+        int ticksSinceUpdate = 0;
 
         PlayerTask(ServerLevel level, ServerPlayer player, Deque<long[]> queue) {
             this.level = level;
             this.player = player;
             this.queue = queue;
+            this.totalPositions = queue.size();
         }
     }
 }

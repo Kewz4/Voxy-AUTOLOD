@@ -47,7 +47,7 @@ public class VoxyServerLODMod {
         MinecraftForge.EVENT_BUS.addListener(LodCommand::register);
 
         if (FMLEnvironment.dist.isClient()) {
-            ClientSetup.init();
+            ClientSetup.init(modBus);
         }
     }
 }

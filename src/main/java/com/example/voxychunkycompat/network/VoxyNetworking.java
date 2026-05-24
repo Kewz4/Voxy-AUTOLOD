@@ -22,10 +22,15 @@ public class VoxyNetworking {
                 LodChunkMessage::encode,
                 LodChunkMessage::decode,
                 LodChunkMessage::handle);
-        CHANNEL.registerMessage(id,
+        CHANNEL.registerMessage(id++,
                 LodRequestMessage.class,
                 LodRequestMessage::encode,
                 LodRequestMessage::decode,
                 LodRequestMessage::handle);
+        CHANNEL.registerMessage(id,
+                LodProgressMessage.class,
+                LodProgressMessage::encode,
+                LodProgressMessage::decode,
+                LodProgressMessage::handle);
     }
 }
