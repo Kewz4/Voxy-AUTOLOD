@@ -1,0 +1,41 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "LGPL-3.0"
+
+[[mods]]
+modId = "voxy_compat_addon"
+version = "0.1.0-forge"
+displayName = "Enhanced Voxy Compatibility Addon"
+description = '''
+Forge port of the Enhanced Voxy Compatibility Addon.
+Adds connected texture (OptiFine CTM) awareness, Fusion connected model support,
+and improved block model baking for Voxy LOD rendering.
+'''
+
+[[dependencies.voxy_compat_addon]]
+    modId = "forge"
+    mandatory = true
+    versionRange = "[47.4,)"
+    ordering = "NONE"
+    side = "CLIENT"
+
+[[dependencies.voxy_compat_addon]]
+    modId = "minecraft"
+    mandatory = true
+    versionRange = "[1.20.1,1.21)"
+    ordering = "NONE"
+    side = "CLIENT"
+
+[[dependencies.voxy_compat_addon]]
+    modId = "voxy"
+    mandatory = false
+    versionRange = "[1,)"
+    ordering = "AFTER"
+    side = "CLIENT"
+
+[[dependencies.voxy_compat_addon]]
+    modId = "embeddium"
+    mandatory = false
+    versionRange = "[0.1,)"
+    ordering = "AFTER"
+    side = "CLIENT"

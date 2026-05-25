@@ -24,9 +24,16 @@ jobs:
             -Dorg.gradle.java.installations.paths="$JAVA_HOME" \
             -Dorg.gradle.java.installations.auto-download=false
 
-      - name: Upload JAR
+      - name: Upload server-LOD JAR
         uses: actions/upload-artifact@v4
         with:
           name: voxy-autolod-forge-1.20.1
           path: build/libs/voxy_server_lod-*.jar
           if-no-files-found: error
+
+      - name: Upload enhanced-addon JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: voxy-compat-addon-forge-1.20.1
+          path: enhanced-addon/build/libs/voxy_compat_addon-*.jar
+          if-no-files-found: warn
